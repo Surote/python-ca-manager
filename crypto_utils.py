@@ -1,5 +1,6 @@
 import os
 import datetime
+import ipaddress
 from cryptography import x509
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import rsa, padding
@@ -9,6 +10,7 @@ from cryptography.exceptions import InvalidSignature
 class CryptoUtils:
     STORAGE_DIR = "ca_storage"
 
+    # ... (verify_cert_signature remains the same) ...
     @staticmethod
     def verify_cert_signature(cert_path, issuer_cert_path):
         """Verifies that cert was signed by issuer_cert."""
@@ -57,7 +59,13 @@ class CryptoUtils:
 
             try:
                 san = cert.extensions.get_extension_for_class(x509.SubjectAlternativeName)
-                details['sans'] = san.value.get_values_for_type(x509.DNSName)
+                for name in san.value:
+                    if isinstance(name, x509.DNSName):
+                        details['sans'].append(f"DNS: {name.value}")
+                    elif isinstance(name, x509.IPAddress):
+                        details['sans'].append(f"IP: {name.value}")
+                    else:
+                        details['sans'].append(f"Other: {name.value}")
             except x509.ExtensionNotFound:
                 pass
 
@@ -78,6 +86,7 @@ class CryptoUtils:
             key_size=key_size,
         )
 
+    # ... save_key, save_cert, load_key, load_cert ...
     @staticmethod
     def save_key(key, filename):
         """Saves a private key to disk."""
@@ -159,7 +168,17 @@ class CryptoUtils:
 
         # Add SANs if provided
         if sans:
-            san_list = [x509.DNSName(dns.strip()) for dns in sans]
+            san_list = []
+            for s in sans:
+                s = s.strip()
+                try:
+                    # Check if it's an IP
+                    ip_addr = ipaddress.ip_address(s)
+                    san_list.append(x509.IPAddress(ip_addr))
+                except ValueError:
+                    # Not an IP, assume DNS
+                    san_list.append(x509.DNSName(s))
+            
             builder = builder.add_extension(
                 x509.SubjectAlternativeName(san_list), critical=False
             )
