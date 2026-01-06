@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="card">
+    <h2>Create {{ type }} CA</h2>
+    <form method="POST">
+        <div class="form-group">
+            <label>Common Name (CN)</label>
+            <input type="text" name="common_name" placeholder="e.g. My Root CA" required>
+            <small>The name of your Certificate Authority.</small>
+        </div>
+        <div class="form-group">
+            <label>Organization (O)</label>
+            <input type="text" name="organization" placeholder="e.g. My Company" required>
+        </div>
+        <div class="form-group">
+            <label>Country (C)</label>
+            <input type="text" name="country" placeholder="e.g. US" required maxlength="2">
+        </div>
+        <div class="form-group">
+            <label>Validity (Days)</label>
+            <input type="number" name="valid_days" value="3650" required>
+        </div>
+        <div class="form-group">
+            <label>Filename Base</label>
+            <input type="text" name="filename" placeholder="root_ca" required>
+            <small>Files Created: [filename].key, [filename].crt</small>
+        </div>
+        <button type="submit" class="btn btn-primary">Generate CA</button>
+    </form>
+</div>
+{% endblock %}

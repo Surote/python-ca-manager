@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="card">
+    <h2>Verify Certificate Trust</h2>
+    <p>Check if a certificate was issued (signed) by a specific CA.</p>
+    <form method="POST">
+        <div class="form-group">
+            <label>Certificate to Verify (Leaf / Child)</label>
+            <select name="cert_file" required>
+                {% for cert in certs %}
+                <option value="{{ cert }}">{{ cert }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Issuer CA (Parent)</label>
+            <select name="issuer_file" required>
+                {% for cert in certs %}
+                <option value="{{ cert }}">{{ cert }}</option>
+                {% endfor %}
+            </select>
+            <small>The CA that you believe signed the certificate above.</small>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Verify Signature</button>
+    </form>
+</div>
+{% endblock %}

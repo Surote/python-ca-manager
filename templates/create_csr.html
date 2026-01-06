@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="card">
+    <h2>Create Certificate Signing Request (CSR)</h2>
+    <p>Use this to create a request for an Intermediate CA or a Website Certificate.</p>
+    <form method="POST">
+        <div class="form-group">
+            <label>Common Name (CN)</label>
+            <input type="text" name="common_name" placeholder="e.g. intermediate-ca or example.com" required>
+        </div>
+        <div class="form-group">
+            <label>Organization (O)</label>
+            <input type="text" name="organization" placeholder="e.g. My Company" required>
+        </div>
+        <div class="form-group">
+            <label>Country (C)</label>
+            <input type="text" name="country" placeholder="e.g. US" required maxlength="2">
+        </div>
+        <div class="form-group">
+            <label>Subject Alternative Names (SANs)</label>
+            <input type="text" name="sans" placeholder="e.g. www.example.com, mail.example.com">
+            <small>Comma-separated list of DNS names.</small>
+        </div>
+        <div class="form-group">
+            <label>Filename Base</label>
+            <input type="text" name="filename" placeholder="my_csr" required>
+            <small>Files Created: [filename].key, [filename].csr</small>
+        </div>
+        <button type="submit" class="btn btn-primary">Generate CSR</button>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="card">
+    <h2>Storage Dashboard</h2>
+    <p>Existing keys, certificates, and CSRs.</p>
+
+    {% if files %}
+    <table class="file-table">
+        <thead>
+            <tr>
+                <th>Filename</th>
+                <th>Type</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for file in files %}
+            <tr>
+                <td>{{ file }}</td>
+                <td>
+                    {% if file.endswith('.key') %}Private Key{% endif %}
+                    {% if file.endswith('.crt') %}Certificate{% endif %}
+                    {% if file.endswith('.csr') %}CSR{% endif %}
+                </td>
+                <td>
+                    {% if file.endswith('.crt') %}
+                    <a href="{{ url_for('view_cert_details', filename=file) }}" class="btn btn-sm"
+                        style="margin-right: 5px; background-color: #555;">View</a>
+                    {% endif %}
+                    <a href="{{ url_for('download_file', filename=file) }}" class="btn btn-sm">Download</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="empty-state">No files found. Start by creating a Root CA.</p>
+    <div class="actions">
+        <a href="{{ url_for('create_root_ca') }}" class="btn btn-primary">Create Root CA</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

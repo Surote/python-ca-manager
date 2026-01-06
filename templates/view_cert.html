@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="card">
+    <h2>Certificate Details: {{ filename }}</h2>
+
+    <table class="file-table">
+        <tbody>
+            <tr>
+                <th>Subject</th>
+                <td>{{ details.subject }}</td>
+            </tr>
+            <tr>
+                <th>Issuer</th>
+                <td>{{ details.issuer }}</td>
+            </tr>
+            <tr>
+                <th>Serial Number</th>
+                <td>{{ details.serial_number }}</td>
+            </tr>
+            <tr>
+                <th>Valid From</th>
+                <td>{{ details.not_valid_before }} UTC</td>
+            </tr>
+            <tr>
+                <th>Valid Until</th>
+                <td>{{ details.not_valid_after }} UTC</td>
+            </tr>
+            <tr>
+                <th>Fingerprint (SHA256)</th>
+                <td style="word-break: break-all; font-family: monospace;">{{ details.fingerprint_sha256 }}</td>
+            </tr>
+            <tr>
+                <th>Is CA?</th>
+                <td>{{ 'Yes' if details.is_ca else 'No' }}</td>
+            </tr>
+            <tr>
+                <th>Subject Alternative Names (SANs)</th>
+                <td>
+                    {% if details.sans %}
+                    <ul>
+                        {% for san in details.sans %}
+                        <li>{{ san }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    None
+                    {% endif %}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="actions" style="margin-top: 20px;">
+        <a href="{{ url_for('index') }}" class="btn btn-sm">Back to Dashboard</a>
+        <a href="{{ url_for('download_file', filename=filename) }}" class="btn btn-primary"
+            style="margin-left: 10px;">Download</a>
+    </div>
+</div>
+{% endblock %}

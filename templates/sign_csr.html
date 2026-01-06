@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="card">
+    <h2>Sign Certificate</h2>
+    <p>Sign a CSR to turn it into a valid Certificate.</p>
+    <form method="POST">
+        <div class="form-group">
+            <label>Select CSR to Sign</label>
+            <select name="csr_file" required>
+                {% for csr in csrs %}
+                <option value="{{ csr }}">{{ csr }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Select Signing CA</label>
+            <select name="ca_cert_file" required>
+                {% for ca in ca_certs %}
+                <option value="{{ ca }}">{{ ca }}</option>
+                {% endfor %}
+            </select>
+            <small>Using private key with same basename.</small>
+        </div>
+
+        <div class="form-group">
+            <label>Validity (Days)</label>
+            <input type="number" name="valid_days" value="365" required>
+        </div>
+
+        <div class="form-group checkbox-group">
+            <input type="checkbox" id="is_ca" name="is_ca">
+            <label for="is_ca">Is this an Intermediate CA?</label>
+            <small class="block-help">Check this if you are signing an Intermediate CA CSR. Leave unchecked for
+                end-entity certs.</small>
+        </div>
+
+        <div class="form-group">
+            <label>Output Filename Base</label>
+            <input type="text" name="output_filename" placeholder="signed_cert" required>
+            <small>File Created: [filename].crt</small>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Sign & Generate Certificate</button>
+    </form>
+</div>
+{% endblock %}
