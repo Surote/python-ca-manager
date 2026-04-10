@@ -11,7 +11,7 @@
 <body>
     <header>
         <div class="container">
-            <h1>🔐 CA Manager</h1>
+            <h1><img src="{{ url_for('static', filename='fast_meow_party.gif') }}" alt="logo" style="height:32px; width:32px; object-fit:cover; border-radius:6px; vertical-align:middle;"> CA Manager</h1>
             <nav>
                 <a href="{{ url_for('index') }}">Dashboard</a>
                 <a href="{{ url_for('create_root_ca') }}">Create Root CA</a>
@@ -22,7 +22,7 @@
         </div>
     </header>
 
-    <main class="container">
+    <main class="container" style="padding-top:36px; padding-bottom:60px;">
         {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
         <div class="flash-messages">

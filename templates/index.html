@@ -2,8 +2,10 @@
 
 {% block content %}
 <div class="card">
-    <h2>Storage Dashboard</h2>
-    <p>Existing keys, certificates, and CSRs.</p>
+    <div class="card-header">
+        <h2>Storage Dashboard</h2>
+        <p>Existing keys, certificates, and CSRs.</p>
+    </div>
 
     {% if files %}
     <table class="file-table">
@@ -19,14 +21,13 @@
             <tr>
                 <td>{{ file }}</td>
                 <td>
-                    {% if file.endswith('.key') %}Private Key{% endif %}
-                    {% if file.endswith('.crt') %}Certificate{% endif %}
-                    {% if file.endswith('.csr') %}CSR{% endif %}
+                    {% if file.endswith('.key') %}<span class="badge badge-key">Private Key</span>{% endif %}
+                    {% if file.endswith('.crt') %}<span class="badge badge-crt">Certificate</span>{% endif %}
+                    {% if file.endswith('.csr') %}<span class="badge badge-csr">CSR</span>{% endif %}
                 </td>
                 <td>
                     {% if file.endswith('.crt') %}
-                    <a href="{{ url_for('view_cert_details', filename=file) }}" class="btn btn-sm"
-                        style="margin-right: 5px; background-color: #555;">View</a>
+                    <a href="{{ url_for('view_cert_details', filename=file) }}" class="btn btn-sm" style="margin-right: 6px;">View</a>
                     {% endif %}
                     <a href="{{ url_for('download_file', filename=file) }}" class="btn btn-sm">Download</a>
                 </td>
@@ -35,7 +36,10 @@
         </tbody>
     </table>
     {% else %}
-    <p class="empty-state">No files found. Start by creating a Root CA.</p>
+    <div class="empty-state">
+        <span class="empty-state-icon">🔐</span>
+        <p>No files yet. Start by creating a Root CA.</p>
+    </div>
     <div class="actions">
         <a href="{{ url_for('create_root_ca') }}" class="btn btn-primary">Create Root CA</a>
     </div>
