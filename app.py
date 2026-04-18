@@ -115,22 +115,42 @@ def verify_cert():
 
     return render_template('verify_cert.html', certs=certs)
 
+def _safe_storage_path(filename):
+    """Reject traversal; return an absolute path inside STORAGE_DIR or None."""
+    if filename != os.path.basename(filename):
+        return None
+    storage_root = os.path.realpath(CryptoUtils.STORAGE_DIR)
+    candidate = os.path.realpath(os.path.join(storage_root, filename))
+    if os.path.commonpath([storage_root, candidate]) != storage_root:
+        return None
+    if not os.path.isfile(candidate):
+        return None
+    return candidate
+
 @app.route('/view/<filename>')
 def view_cert_details(filename):
     if not filename.endswith('.crt'):
         flash('Can only view certificate details (.crt files).', 'error')
         return redirect(url_for('index'))
-    
+
+    if _safe_storage_path(filename) is None:
+        flash('File not found.', 'error')
+        return redirect(url_for('index'))
+
     details = CryptoUtils.get_cert_details(filename)
     if not details:
         flash('Error parsing certificate.', 'error')
         return redirect(url_for('index'))
-        
+
     return render_template('view_cert.html', filename=filename, details=details)
 
 @app.route('/download/<filename>')
 def download_file(filename):
-    return send_file(os.path.join(CryptoUtils.STORAGE_DIR, filename), as_attachment=True)
+    path = _safe_storage_path(filename)
+    if path is None:
+        flash('File not found.', 'error')
+        return redirect(url_for('index'))
+    return send_file(path, as_attachment=True)
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)

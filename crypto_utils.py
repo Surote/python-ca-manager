@@ -42,8 +42,8 @@ class CryptoUtils:
                 'subject': cert.subject.rfc4514_string(),
                 'issuer': cert.issuer.rfc4514_string(),
                 'serial_number': cert.serial_number,
-                'not_valid_before': cert.not_valid_before.strftime('%Y-%m-%d %H:%M:%S'),
-                'not_valid_after': cert.not_valid_after.strftime('%Y-%m-%d %H:%M:%S'),
+                'not_valid_before': cert.not_valid_before_utc.strftime('%Y-%m-%d %H:%M:%S UTC'),
+                'not_valid_after': cert.not_valid_after_utc.strftime('%Y-%m-%d %H:%M:%S UTC'),
                 'version': cert.version.name,
                 'fingerprint_sha256': cert.fingerprint(hashes.SHA256()).hex(),
                 'sans': [],
@@ -132,6 +132,7 @@ class CryptoUtils:
             x509.NameAttribute(NameOID.COMMON_NAME, common_name),
         ])
 
+        now = datetime.datetime.now(datetime.timezone.utc)
         cert_builder = x509.CertificateBuilder().subject_name(
             subject
         ).issuer_name(
@@ -141,9 +142,9 @@ class CryptoUtils:
         ).serial_number(
             x509.random_serial_number()
         ).not_valid_before(
-            datetime.datetime.utcnow()
+            now
         ).not_valid_after(
-            datetime.datetime.utcnow() + datetime.timedelta(days=valid_days)
+            now + datetime.timedelta(days=valid_days)
         ).add_extension(
             x509.BasicConstraints(ca=True, path_length=None), critical=True,
         )
@@ -160,11 +161,6 @@ class CryptoUtils:
             x509.NameAttribute(NameOID.ORGANIZATION_NAME, organization),
             x509.NameAttribute(NameOID.COMMON_NAME, common_name),
         ]))
-
-        # Add Basic Constraints
-        builder = builder.add_extension(
-            x509.BasicConstraints(ca=True, path_length=0), critical=True,
-        )
 
         # Add SANs if provided
         if sans:
@@ -194,6 +190,7 @@ class CryptoUtils:
         
         csr = x509.load_pem_x509_csr(csr_pem.encode('utf-8'))
 
+        now = datetime.datetime.now(datetime.timezone.utc)
         builder = x509.CertificateBuilder().subject_name(
             csr.subject
         ).issuer_name(
@@ -203,9 +200,9 @@ class CryptoUtils:
         ).serial_number(
             x509.random_serial_number()
         ).not_valid_before(
-            datetime.datetime.utcnow()
+            now
         ).not_valid_after(
-            datetime.datetime.utcnow() + datetime.timedelta(days=valid_days)
+            now + datetime.timedelta(days=valid_days)
         )
 
         # If it's an Intermediate CA, we need BasicConstraints CA=TRUE
